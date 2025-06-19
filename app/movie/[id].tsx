@@ -3,13 +3,13 @@ import React from 'react';
 import { Text, View } from 'react-native';
 
 const DetailsPage = () => {
-    const { id } = useLocalSearchParams();
+  const { id } = useLocalSearchParams();
 
-    return (
-        <View>
-            <Text>DetailsPage for movie {id}</Text>
-        </View>
-    )
-}
+  return (
+    <View>
+      <Text>DetailsPage for movie {id}</Text>
+    </View>
+  );
+};
 
-export default DetailsPage
+export default DetailsPage;
