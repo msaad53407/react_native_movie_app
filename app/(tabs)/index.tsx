@@ -17,7 +17,7 @@ const Homepage = () => {
     data: movies,
     loading: moviesLoading,
     error: moviesError,
-  } = useFetch(() => fetchMovies({ query: 'fight club' }));
+  } = useFetch(() => fetchMovies({ query: 'harry potter' }));
 
   return (
     <SafeAreaView className='flex-1 bg-primary'>
