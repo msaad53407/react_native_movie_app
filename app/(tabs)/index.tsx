@@ -1,9 +1,11 @@
 import MovieCard from '@/components/MovieCard';
 import SearchBar from '@/components/SearchBar';
+import TrendingCard from '@/components/TrendingCard';
 import { icons } from '@/constants/icons';
 import { images } from '@/constants/images';
 import useFetch from '@/hooks/useFetch';
 import { fetchMovies } from '@/services/api';
+import { getTrendingMovies } from '@/services/appwrite';
 import { useRouter } from 'expo-router';
 import { XIcon } from 'lucide-react-native';
 import React from 'react';
@@ -14,25 +16,27 @@ const Homepage = () => {
   const router = useRouter();
 
   const {
+    data: trendingMovies,
+    loading: trendingMoviesLoading,
+    error: trendingMoviesError,
+  } = useFetch(() => getTrendingMovies());
+
+  const {
     data: movies,
     loading: moviesLoading,
     error: moviesError,
-  } = useFetch(() => fetchMovies({ query: 'harry potter' }));
+  } = useFetch(() => fetchMovies({ query: '' }));
 
   return (
     <SafeAreaView className='flex-1 bg-primary'>
       <Image source={images.bg} className='absolute w-full z-0' resizeMode='cover' />
       <ScrollView
-        className='flex-1 px-5'
-        showsVerticalScrollIndicator={false}
-        contentContainerStyle={{
-          minHeight: '100%',
-          paddingBottom: 10,
-        }}>
+        className='flex-1 px-5 min-h-full'
+        >
         <Image source={icons.logo} className='w-12 h-10 mt-20 mb-5 mx-auto' />
-        {moviesLoading ? (
+        {trendingMoviesLoading || moviesLoading ? (
           <ActivityIndicator size='large' color='0000ff' className='mt-10 self-center' />
-        ) : moviesError ? (
+        ) : trendingMoviesError || moviesError ? (
           <Text className='text-red-500'>Some Error Occured</Text>
         ) : !movies || movies.length === 0 ? (
           <View className='min-h-[70%] flex-col w-full justify-center items-center'>
@@ -42,6 +46,23 @@ const Homepage = () => {
         ) : (
           <View className='flex-1 mt-5'>
             <SearchBar onPress={() => router.push('/search')} />
+            {trendingMovies && (
+              <View className='mt-10'>
+                <Text className='text-lg text-white font-bold mb-3'>Trending Movies</Text>
+                <FlatList
+                  horizontal
+                  showsHorizontalScrollIndicator={false}
+                  className='mb-4 mt-3'
+                  data={trendingMovies}
+                  contentContainerStyle={{
+                    gap: 26,
+                  }}
+                  renderItem={({ item, index }) => <TrendingCard movie={item} index={index} />}
+                  keyExtractor={(item, indx) => item.movie_id.toString() + indx.toString()}
+                  ItemSeparatorComponent={() => <View className='w-4' />}
+                />
+              </View>
+            )}
             <>
               <Text className='text-lg text-white font-bold mt-5 mb-3'>Latest Movies</Text>
               <FlatList
